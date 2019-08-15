@@ -1,6 +1,7 @@
 import {createSwitchNavigator,createAppContainer, createStackNavigator} from 'react-navigation'
 import MainNavigation from './stackNavigationMain'
 import SearchNavigation from './stackNavigationSearch'
+import ResultNavigation from './stackNavigationResult'
 
 const AppNavigation  = createSwitchNavigator({
     Main: {
@@ -8,6 +9,9 @@ const AppNavigation  = createSwitchNavigator({
     },
     Search: {
         screen: SearchNavigation
+    },
+    Result:{
+        screen: ResultNavigation
     }
 })
 

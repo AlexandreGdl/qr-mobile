@@ -1,12 +1,10 @@
 import API_KEY from '../API/API_KEY'
 
 creatingUrl = (data) => {
-    console.log(data)
     let time
     let genres 
     let type
     let people
-    let keywords
 
     if ( !data.noTime ){
         if (hMin && minMin && hMin && minMin) {
@@ -37,32 +35,13 @@ creatingUrl = (data) => {
         people = ''
     }
 
-    if (data.keywords.length > 0 ){
-        keywords = '&with_keywords='
-        for(let i = 0 ; i<data.keywords.length ; i++){
-            keywords = keywords  + `${data.keywords[i].id},`
-        }
-    } else {
-        keywords = ''
-    }
 
 
-    let url = `https://api.themoviedb.org/3/discover/${type}?api_key=${API_KEY}&language=fr&sort_by=popularity.desc&include_adult=false${time}${genres}${people}${keywords}`
-    if (url){
-        fetch(url).then((response) => response.json()).then((responseJSON) => {
-            if (responseJSON.total_results === 0) {
-                url.replace(',','|')
-                fetch(url).then((secondResponse) => secondResponse.json()).then((secondResponseJSON) => {
-                    return secondResponseJSON
-                }).catch((error) => {
-                    console.log(error)
-                })
-            } else {
-                return responseJSON
-            }
-            
-        })
-    }
+    let url = `https://api.themoviedb.org/3/discover/${type}?api_key=${API_KEY}&language=fr&sort_by=popularity.desc&include_adult=false${time}${genres}${people}`
+    return url
+
 }
+
+
 
 export default creatingUrl

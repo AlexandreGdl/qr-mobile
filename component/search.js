@@ -25,14 +25,19 @@ class Search extends Component {
             people: [],
             showPeopleSearch: 'block',
             loadingKeywords: true,
-            keywords: []
+            keywords: false,
+            shufflingKeywords: true,
+            selectedKeywords: [],
+            limite: 9,
+            noKeywords: false,
+            isLoading: false
         }
         this.typeView = this.typeView.bind(this)
         this.genreView = this.genreView.bind(this)
     }
 
 
-
+    
 
      getPeopleFromAPI = (text) => {
         let url = `https://api.themoviedb.org/3/search/person?api_key=${API_KEY}&query=${text}&language=fr`
@@ -101,8 +106,6 @@ class Search extends Component {
                         }
                         return(
                             <TouchableOpacity key={items.id} style={{flexBasis: '30%',marginLeft:5,marginRight:5,aspectRatio: 1/1,marginBottom:15,}} onPress={() => {
-                                
-
                                 if (exist){
                                     genres.splice(index,1)
                                     this.setState({genres: genres})
@@ -120,7 +123,7 @@ class Search extends Component {
                             }}>
                                 {
                                     exist ? 
-                                        <View style={{width: "100%",aspectRatio: 1/1,display:'flex',justifyContent:'center',alignItems:'center',backgroundColor:"#3C3C3C",borderRadius:10}}>
+                                        <View style={{width: "100%",aspectRatio: 1/1,display:'flex',justifyContent:'center',alignItems:'center',backgroundColor:"#backgroundColor",borderRadius:10}}>
                                             <Icon name={'done'} type="material" color={"#3C3C3C"} containerStyle={{borderRadius: 50,backgroundColor:'green',display:'flex',justifyContent:'center',alignItems:'center',padding:5}}  size ={20}/>
                                             <Text style={{color: 'white',fontWeight:'bold',fontSize: 22,textAlign:'center',marginTop:10}}>{items.name}</Text>
                                             <Text style={{color: 'white',textAlign:'center',marginTop:8,fontSize:12}}>Sélectionné</Text>
@@ -208,7 +211,7 @@ class Search extends Component {
                     <Text style={{color:'white',fontSize: 16}}> min </Text>   
                 </View>
 
-                <TouchableOpacity style={{justifyContent:'center',alignItems:'center',backgroundColor:"#3C3C3C",padding: 10,borderRadius: 50,marginLeft:'auto',marginRight:'auto',marginTop: 30,marginBottom: 30}}
+                <TouchableOpacity style={styles.buttonSkip}
                 onPress={() => {
                     this.setState({index: this.state.index + 1,noTime: true})
                 }}
@@ -218,12 +221,12 @@ class Search extends Component {
 
                 {hMin && minMin ?
                 <TouchableOpacity style={styles.buttonNext} onPress={() => {
-                    this.setState({index: this.state.index + 1})
+                    this.setState({index: this.state.index + 1,noTime: false})
                 }}>
                     <Text style={{color:'white',fontWeight: 'bold'}}>SUIVANT</Text>
                 </TouchableOpacity>
                 : hMax && minMax ? <TouchableOpacity style={styles.buttonNext} onPress={() => {
-                    this.setState({index: this.state.index + 1})
+                    this.setState({index: this.state.index + 1,noTime: false})
                 }}>
                     <Text style={{color:'white',fontWeight: 'bold'}}>SUIVANT</Text>
                 </TouchableOpacity> : false } 
@@ -288,18 +291,16 @@ class Search extends Component {
                 </View>
 
                 
-                <TouchableOpacity style={{justifyContent:'center',alignItems:'center',backgroundColor:"#3C3C3C",padding: 10,borderRadius: 50,marginLeft:'auto',marginRight:'auto',marginTop: 30,marginBottom: 30}}
+                <TouchableOpacity style={styles.buttonSkip}
                 onPress={() => {
                     this.setState({index: this.state.index + 1,noPeople: true})
-                    this.setState({keywords: creatingUrl(this.state)})
                 }}>
                     <Text style={{color:'white',fontSize: 16,}}>Passer cette étape ( conseiller )</Text>
                 </TouchableOpacity>
 
                 {people[0] ? 
                 <TouchableOpacity style={styles.buttonNext} onPress={() => {
-                    this.setState({index: this.state.index + 1})
-                    this.setState({keywords: creatingUrl(this.state)})
+                    this.setState({index: this.state.index + 1,noPeople: false})
                 }}>
                     <Text style={{color:'white',fontWeight: 'bold'}}>SUIVANT</Text>
                 </TouchableOpacity> 
@@ -309,78 +310,155 @@ class Search extends Component {
         )
     }
 
-    // ageView = (chosen,adult) => {
-    //     return(
-    //         <View>
-    //             <View style={{flexDirection:'row',justifyContent:'space-between',flexWrap:'wrap',width: '80%',marginLeft:'auto',marginRight:'auto'}}>
-    //                 <TouchableOpacity style={chosen === 10 ? styles.chosenAge : styles.age}>
-    //                     {/* // icone  */}
-    //                     <Text style={{color:'white',fontSize:16}}>10 ans et + </Text>
-    //                 </TouchableOpacity>
+    keywordView = (loadingKeywords,keywords,selectedKeywords,shufflingKeywords,limite) => {
+        let alreadyUsed = []
+        if (shufflingKeywords && keywords !== false ){
+            for (let i = keywords.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [keywords[i], keywords[j]] = [keywords[j], keywords[i]];
+            }
+        }
 
-    //                 <TouchableOpacity style={chosen === 12 ? styles.chosenAge : styles.age}>
-    //                     {/* // icone  */}
-    //                     <Text style={{color:'white',fontSize:16}}>12 ans et + </Text>
-    //                 </TouchableOpacity>
-
-    //                 <TouchableOpacity style={chosen === 16 ? styles.chosenAge : styles.age}>
-    //                     {/* // icone  */}
-    //                     <Text style={{color:'white',fontSize:16}}>16 ans et + </Text>
-    //                 </TouchableOpacity>
-
-    //                 <TouchableOpacity style={chosen === 18 ? styles.chosenAge : styles.age}>
-    //                     {/* // icone  */}
-    //                     <Text style={{color:'white',fontSize:16}}>18 ans et + </Text>
-    //                 </TouchableOpacity>
-    //             </View>
-                
-
-    //             <TouchableOpacity style={styles.allPublic}
-    //             onPress={() =>{
-    //                 this.setState({adult: false,chosenAge: 20})
-    //             }}>
-    //                 <Text style={{color:'white',fontSize:16}}> Tout public </Text>
-    //             </TouchableOpacity>
-
-    //             {chosen || adult ?
-    //             <TouchableOpacity style={styles.buttonNext} onPress={() => {
-    //                 this.setState({index: this.state.index + 1})
-    //             }}>
-    //                 <Text style={{color:'white',fontWeight: 'bold'}}>SUIVANT</Text>
-    //             </TouchableOpacity> 
-    //             :
-    //             false }
-    //         </View>
-    //     )
-    // }
-
-    keywordView = (loadingKeywords,keywords) => {
         if(loadingKeywords){
+            
             return(
                 <View style={{flex: 1,alignItems: 'center',justifyContent:'center',marginTop:150}}> 
                     <ActivityIndicator size={'large'} color={'#D11C1C'} />
                     <Text style={{marginTop: 30,color:'white',fontSize: 18,textAlign:'center',width:'80%'}}>Nous sommes en train de chercher les mots clées correspondant le plus à votre recherche .</Text>
                 </View>
             )
-        } else if (keywords.total_results === 0) {
+        } else if (keywords.length === 0) {
             return(
                 <View>
                     <Text>Pas de truc qui correspond</Text>
                 </View>
             )
-        } else  {
+        } else if (keywords.length > 0)  {
+            let r = 0
             return(
                 <View>
+                    <Text style={styles.landingText}>Un peu d'inspiration :</Text>
+                    <Text style={{textAlign:'center',marginBottom: 30,color:'white',fontSize: 18,width: '80%'}}>Choisissez les mots-clés qui vous intéressent</Text>
+
+                    <View style={{display:'flex',flexDirection:'row',flexWrap:'wrap',width: '92%',justifyContent:'space-around',marginLeft:'auto',marginRight:'auto',marginBottom: 20}}>
+                        {keywords.map((keyword) => {
+                            let check = false
+                            let selected = false
+                            let index 
+                            let counter = 0
+                            alreadyUsed.map((used) => {
+                                if (used === keyword.id) {
+                                    check = true
+                                }
+                            })
+                            selectedKeywords.map((data) => {
+                                if (data === keyword.id){
+                                    selected = true
+                                    index = counter
+                                } 
+                                counter++
+                            })
+                            alreadyUsed.push(keyword.id)
+                            if (!check){
+                                r++
+                                if (r > limite) {
+                                } else {
+                                    return(
+                                        <TouchableOpacity key={keyword.id} style={ selected ? styles.keywordsSelected : styles.keywords}
+                                        onPress={() => {
+                                            if (selected === true){
+                                                this.state.selectedKeywords.splice(index,1)
+                                                this.setState({selectedKeywords: this.state.selectedKeywords})
+                                            } else {
+                                                if (selectedKeywords.length < 3){
+                                                    this.state.selectedKeywords.push(keyword.id)
+                                                    this.setState({selectedKeywords: this.state.selectedKeywords,shufflingKeywords: false})
+                                                } 
+                                            }
+                                        }}>
+                                            <Text style={{color:'white',fontSize:16}}>{keyword.name}</Text>
+                                        </TouchableOpacity>
+                                    )
+                                }
+                            }
+                        })}
+                    </View>
+
+                    <TouchableOpacity style={{marginTop: 5,marginBottom: 10,alignItems:'center',justifyContent:'center',borderRadius:50,borderWidth:1,borderColor:'white',padding:15,marginLeft:'auto',marginRight:'auto'}}
+                    onPress={() => {
+                        this.setState({limite: limite + 6,shufflingKeywords: false})
+                    }}>
+                        <Text style={{color:'white',fontSize:14}}>Plus de mots clés</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.buttonSkip}
+                    onPress={() => {
+                        this.props.navigation.navigate('Result',{data: this.state,noKeywords: true})
+                    }}>
+                    <   Text style={{color:'white',fontSize: 16,}}>Passer cette étape ( conseiller )</Text>
+                    </TouchableOpacity>
                     
+                    { selectedKeywords.length > 0 ? 
+                    <TouchableOpacity style={styles.buttonNext} onPress={() => {
+                        this.props.navigation.navigate('Result',{data: this.state,noKeywords: false})
+                    }}>
+                        <Text style={{color:'white',fontWeight: 'bold'}}>SUIVANT</Text>
+                    </TouchableOpacity> 
+                    : false
+                    }
                 </View>
             )
         }
         
     }
 
+    // creating the keywordsList
+
+    getKeywordMovieList = async  (url) => {
+        let list 
+        let keywords = []
+        let name
+        this.state.type === 'movie' ? name = 'keywords' : name = 'results'
+        if (url) {
+            await fetch(url).then((response) => response.json()).then((responseJSON) => {
+                if (responseJSON.total_results === 0) {
+                    url.replace(',','|')
+                    fetch(url).then((secondResponse) => secondResponse.json()).then((secondResponseJSON) => {
+                        console.log("==========scnd===========")
+                        list =  secondResponseJSON
+                    }).catch((error) => {
+                        console.log(error)
+                    })
+                } else {
+                    console.log("==========1st===========")
+                    list =  responseJSON
+                }
+                
+            })
+        }
+        for (let i = 0; i < 12; i++){
+            let url = `https://api.themoviedb.org/3/${this.state.type}/${list.results[i].id}/keywords?api_key=${API_KEY}`
+            console.log(url)
+            await fetch(url).then((response) => response.json()).then((response) => {
+                let limite
+                if (response[name].length > 3 ) {
+                    limite = 3 
+                } else {
+                    limite = response[name].length
+                }
+                for(let i = 0; i < limite; i++){
+                    keywords.push(response[name][i])
+                    console.log(response)
+               }
+            })
+        }
+        this.setState({loadingKeywords: false,keywords: keywords})
+    }
+
     render(){
 
-        const {index,type,genres,peopleSearch,people,showPeopleSearch,loadingKeywords,keywords,hMin,hMax,minMin,minMax} = this.state
+        const {index,type,genres,peopleSearch,people,showPeopleSearch,loadingKeywords,keywords,hMin,hMax,minMin,minMax,selectedKeywords,shufflingKeywords,limite,isLoading} = this.state
+        const state = this.state
         let indexComponent = []
         for(let j = 1; j < index + 1; j++ ){
             if (j === index ){
@@ -389,59 +467,75 @@ class Search extends Component {
                 indexComponent[j] = {key: j,current: false}
             }
         }
-        return(
-            <ScrollView style={{backgroundColor: '#1d1e24',flex: 1,paddingTop: 20, }}>
-                <TouchableOpacity style={styles.button} onPress={() => {
-                    index === 1 ? this.props.navigation.navigate('Main') : this.setState({index: index - 1})
-                }}>
-                    <Text style={{color: "white",}} >
-                        Retour
-                    </Text>
-                </TouchableOpacity>
 
-                <View style={styles.indexContainer}>
-                    {indexComponent.map((item) => {
-                        if(item.current === true) {
-                            return(
-                                <View key={item.key} style={styles.currentIndex}>
-                                        <Text style={{fontSize: 18,color: "white",fontWeight:'bold'}}> {index} / 5 </Text>
-                                </View>
-                            )
-                        } else if (item.current === false) {
-                            return(
-                                <TouchableOpacity key={item.key} style={styles.index} onPress={() => {
-                                    this.setState({index: item.key})
-                                }}></TouchableOpacity>
-                            )
-                        }
-                    })}
+        if (loadingKeywords && !keywords && index === 5 ){
+            this.getKeywordMovieList(creatingUrl(this.state))
+            
+        }
+
+        if (isLoading){
+            return(
+                <View style={{flex: 1,alignItems: 'center',justifyContent:'center',marginTop:150}}> 
+                    <ActivityIndicator size={'large'} color={'#D11C1C'} />
+                    <Text style={{marginTop: 30,color:'white',fontSize: 18,textAlign:'center',width:'80%'}}>Nous sommes en train de chercher les mots clées correspondant le plus à votre recherche .</Text>
                 </View>
-
-                
-
-                {/* Appel de la fonction lié a l'étape */}
-                {
-                    index === 1 ?
-                    this.typeView(type)
-                    :
-                    index === 2 ?
-                    this.genreView(genres,type)
-                    : 
-                    index === 3 ?
-                    this.timeView(type,hMin,hMax,minMin,minMax)
-                    :
-                    index === 4 ?
-                    this.peopleSearch(type,peopleSearch,people,showPeopleSearch)
-                    :
-                    index === 5 ?
-                    this.keywordView(loadingKeywords,keywords)
-                    :
-                    false
-                }
-
-
-            </ScrollView>
-        )
+            )
+        } else {
+            return(
+                <ScrollView style={{backgroundColor: '#1d1e24',flex: 1,paddingTop: 20, }}>
+                    <TouchableOpacity style={styles.button} onPress={() => {
+                        index === 1 ? this.props.navigation.navigate('Main') : this.setState({index: index - 1})
+                    }}>
+                        <Text style={{color: "white",}} >
+                            Retour
+                        </Text>
+                    </TouchableOpacity>
+    
+                    <View style={styles.indexContainer}>
+                        {indexComponent.map((item) => {
+                            if(item.current === true) {
+                                return(
+                                    <View key={item.key} style={styles.currentIndex}>
+                                            <Text style={{fontSize: 18,color: "white",fontWeight:'bold'}}> {index} / 5 </Text>
+                                    </View>
+                                )
+                            } else if (item.current === false) {
+                                return(
+                                    <TouchableOpacity key={item.key} style={styles.index} onPress={() => {
+                                        this.setState({index: item.key})
+                                    }}></TouchableOpacity>
+                                )
+                            }
+                        })}
+                    </View>
+    
+                    
+    
+                    {/* Appel de la fonction lié a l'étape */}
+                    {
+                        index === 1 ?
+                        this.typeView(type)
+                        :
+                        index === 2 ?
+                        this.genreView(genres,type)
+                        : 
+                        index === 3 ?
+                        this.timeView(type,hMin,hMax,minMin,minMax)
+                        :
+                        index === 4 ?
+                        this.peopleSearch(type,peopleSearch,people,showPeopleSearch)
+                        :
+                        index === 5 ?
+                        this.keywordView(loadingKeywords,keywords,selectedKeywords,shufflingKeywords,limite)
+                        :
+                        false
+                    }
+    
+    
+                </ScrollView>
+            )
+        }
+        
     }
 }
 

@@ -32,8 +32,7 @@ class Main extends Component {
                 <View style={styles.body}>
                     <TouchableOpacity
                         onPress={() => this.props.navigation.navigate('Search')}
-                        style={styles.landingButton}
-                        activeOpacity={1}>
+                        style={styles.landingButton}>
                             <Text style={styles.landingText}>Trouver un film</Text>
                     </TouchableOpacity>
 

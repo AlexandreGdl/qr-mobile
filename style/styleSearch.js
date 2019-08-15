@@ -12,7 +12,8 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         borderTopRightRadius: 50,
-        borderBottomRightRadius: 50
+        borderBottomRightRadius: 50,
+        fontWeight:'bold'
     },
     index:{
         backgroundColor: '#515151',
@@ -172,6 +173,39 @@ const styles = StyleSheet.create({
         width: '80%',
         marginLeft:'auto',
         marginRight:'auto'
+    },
+    keywords:{
+        marginBottom: 16,
+        width:'auto',
+        alignItems:'center',
+        justifyContent:'center',
+        backgroundColor:"#3C3C3C",
+        padding:10,
+        borderRadius:50,
+        marginLeft:4,
+        marginRight: 4
+    },
+    keywordsSelected:{
+        marginBottom: 16,
+        width:'auto',
+        alignItems:'center',
+        justifyContent:'center',
+        backgroundColor:"gray",
+        padding:10,
+        borderRadius:50,
+        marginLeft:4,
+        marginRight: 4
+    },
+    buttonSkip:{
+        justifyContent:'center',
+        alignItems:'center',
+        backgroundColor:"#3C3C3C",
+        padding: 10,
+        borderRadius: 50,
+        marginLeft:'auto',
+        marginRight:'auto',
+        marginTop: 30,
+        marginBottom: 30
     }
 })
 
